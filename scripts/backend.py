@@ -19,6 +19,7 @@ API Endpoints:
 Server runs on http://localhost:8000
 """
 
+import os
 import re
 import serial
 import threading
@@ -33,7 +34,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # ── Configuration ─────────────────────────────────────────────────────────────
-SERIAL_PORT  = "COM3"   # Windows: COM3/COM4. Linux: /dev/ttyUSB0 or /dev/ttyACM0. Mac: /dev/cu.usbserial-*
+# Serial port of the Arduino running Servo_temp.ino. Override with the
+# BREEZABILITY_SERIAL_PORT environment variable (see .env.example):
+#   Windows: COM3/COM4. Linux: /dev/ttyUSB0 or /dev/ttyACM0. Mac: /dev/cu.usbserial-*
+SERIAL_PORT  = os.environ.get("BREEZABILITY_SERIAL_PORT", "COM3")
 BAUD_RATE    = 9600
 TIMEOUT      = 1
 HISTORY_SIZE = 100
@@ -265,6 +269,7 @@ async def mock_data(temperature: float, light_level: float = 500, servo_position
 if __name__ == "__main__":
     import uvicorn
     print("Starting Breezability Backend...")
+    print(f"Serial port: {SERIAL_PORT} (set BREEZABILITY_SERIAL_PORT to change)")
     print("API: http://localhost:8000")
     print("Docs: http://localhost:8000/docs")
     uvicorn.run(app, host="0.0.0.0", port=8000)
